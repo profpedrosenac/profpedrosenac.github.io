@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minha página com botões</title>
+  <!-- Bootstrap CSS CDN -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+    }
+    .btn-custom {
+      width: 220px;
+      margin: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 30px;
+      transition: transform 0.2s;
+    }
+    .btn-custom:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Bem-vindo(a) ao meu site!</h1>
+  <p>Veja abaixo os links que você pode editar:</p>
+
+  <!-- Botões com links - substitua os href com seus URLs -->
+  <a href="APIs.html" target="_blank" class="btn btn-primary btn-custom">Lista API</a>
+  <a href="DAX.html" target="_blank" class="btn btn-success btn-custom">DAX</a>
+  <a href="LinguagemM.html" target="_blank" class="btn btn-danger btn-custom">Linguagem M</a>
+
+  <script>
+    // Função simples só para demonstrar interação JS
+    function botaoClicado(nome) {
+      alert(nome + ' foi clicado!');
+    }
+  </script>
+
+  <!-- Bootstrap JS Bundle CDN (inclui Popper) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+</body>
+</html>
