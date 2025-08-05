@@ -297,6 +297,7 @@
             <select id="categoryFilter" class="filter-select">
                 <option value="">📂 Todas as Categorias</option>
                 <option value="📊 Agregação">📊 Agregação</option>
+                <option value="📝 Texto">📝 Texto</option>
                 <option value="🧮 Matemática">🧮 Matemática</option>
                 <option value="📅 Data e Hora">📅 Data e Hora</option>
                 <option value="🔁 Filtros">🔁 Filtros</option>
@@ -407,6 +408,21 @@
             { categoria: "🔍 Relacionamento", funcao: "RELATED", exemplo: "RELATED(Produtos[Nome])", descricao: "Acessa dados de uma tabela relacionada", tipo: "Intermediária" },
             { categoria: "🔍 Relacionamento", funcao: "RELATEDTABLE", exemplo: "RELATEDTABLE(Vendas)", descricao: "Retorna uma tabela relacionada", tipo: "Avançada" },
             { categoria: "🔍 Relacionamento", funcao: "LOOKUPVALUE", exemplo: "LOOKUPVALUE(Produtos[Preço], Produtos[ID], Vendas[ProdutoID])", descricao: "Procura um valor em uma tabela", tipo: "Intermediária" },
+
+            // 📝 Funções de Texto
+            { categoria: "📝 Texto", funcao: "CONCATENATE", exemplo: "CONCATENATE(Clientes[Nome], Clientes[Sobrenome])", descricao: "Combina dois valores de texto em um único valor", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "CONCATENATEX", exemplo: "CONCATENATEX(Clientes, Clientes[Nome], \", \")", descricao: "Concatena valores de uma coluna com delimitador", tipo: "Intermediária" },
+            { categoria: "📝 Texto", funcao: "LEFT", exemplo: "LEFT(Clientes[Nome], 3)", descricao: "Retorna os primeiros caracteres de um texto", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "RIGHT", exemplo: "RIGHT(Clientes[Nome], 4)", descricao: "Retorna os últimos caracteres de um texto", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "MID", exemplo: "MID(Clientes[Nome], 2, 3)", descricao: "Retorna uma parte do texto a partir de uma posição", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "LEN", exemplo: "LEN(Clientes[Nome])", descricao: "Retorna o número de caracteres em um texto", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "SEARCH", exemplo: "SEARCH(\"a\", Clientes[Nome], 1)", descricao: "Retorna a posição de um texto dentro de outro", tipo: "Intermediária" },
+            { categoria: "📝 Texto", funcao: "REPLACE", exemplo: "REPLACE(Clientes[Nome], 1, 3, \"XXX\")", descricao: "Substitui parte de um texto por outro", tipo: "Intermediária" },
+            { categoria: "📝 Texto", funcao: "SUBSTITUTE", exemplo: "SUBSTITUTE(Clientes[Nome], \"a\", \"@\")", descricao: "Substitui todas as ocorrências de um texto por outro", tipo: "Intermediária" },
+            { categoria: "📝 Texto", funcao: "UPPER", exemplo: "UPPER(Clientes[Nome])", descricao: "Converte o texto para letras maiúsculas", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "LOWER", exemplo: "LOWER(Clientes[Nome])", descricao: "Converte o texto para letras minúsculas", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "TRIM", exemplo: "TRIM(Clientes[Nome])", descricao: "Remove espaços extras do texto", tipo: "Básica" },
+            { categoria: "📝 Texto", funcao: "FORMAT", exemplo: "FORMAT(Vendas[Valor], \"R$ #,##0.00\")", descricao: "Formata valores numéricos ou datas como texto", tipo: "Intermediária" },
 
             // 📈 Funções de Inteligência de Tempo
             { categoria: "📈 Tempo", funcao: "TOTALYTD", exemplo: "TOTALYTD(SUM(Vendas[Valor]), Calendario[Data])", descricao: "Acumulado no ano até a data", tipo: "Avançada" },
