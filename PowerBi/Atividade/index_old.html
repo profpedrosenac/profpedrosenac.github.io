@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Atividade Power BI - Análise de Estoque</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .section {
+            background-color: #fff;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            cursor: pointer;
+            margin: 0;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+        }
+        .section-content {
+            display: none;
+            padding: 10px;
+        }
+        ul {
+            margin-top: 5px;
+        }
+        .highlight {
+            background-color: #eaf2f8;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🧠 Atividade Power BI: Análise de Estoque</h1>
+
+<div class="section">
+    <h2 onclick="toggleSection(this)">🎯 Objetivo da Atividade</h2>
+    <div class="section-content">
+        <p>Desenvolver um modelo de dados no Power BI para analisar movimentações de estoque, identificar produtos críticos e entender o desempenho dos funcionários envolvidos nas operações.</p>
+    </div>
+</div>
+
+<div class="section">
+    <h2 onclick="toggleSection(this)">📁 Arquivos Utilizados</h2>
+    <div class="section-content">
+        <ul>
+            <li><strong>produtos.csv</strong></li>
+            <li><strong>funcionarios.csv</strong></li>
+            <li><strong>movimentacoes.csv</strong></li>
+        </ul>
+    </div>
+</div>
+
+<div class="section">
+    <h2 onclick="toggleSection(this)">🛠️ Etapas da Atividade</h2>
+    <div class="section-content">
+        <div class="highlight"><strong>1. Importação e Tratamento de Dados (Power Query - M)</strong></div>
+        <ul>
+            <li>Importar os arquivos CSV</li>
+            <li>Corrigir tipos de dados</li>
+            <li>Criar colunas de Mês e Ano</li>
+        </ul>
+        <div class="highlight"><strong>2. Modelagem de Dados</strong></div>
+        <ul>
+            <li>Relacionar tabelas corretamente</li>
+            <li>Identificar tabelas fato e dimensão</li>
+        </ul>
+        <div class="highlight"><strong>3. Criação de Medidas com DAX</strong></div>
+        <ul>
+            <li>Estoque Atual por Produto</li>
+            <li>Produto abaixo do estoque mínimo</li>
+            <li>Total movimentado por funcionário</li>
+        </ul>
+        <div class="highlight"><strong>4. Visualizações</strong></div>
+        <ul>
+            <li>Tabela com produtos críticos</li>
+            <li>Gráfico de movimentações por funcionário</li>
+            <li>Linha do tempo de movimentações</li>
+        </ul>
+    </div>
+</div>
+
+<div class="section">
+    <h2 onclick="toggleSection(this)">🧩 Desafios Extras</h2>
+    <div class="section-content">
+        <ul>
+            <li>Identificar o produto mais movimentado</li>
+            <li>Criar KPI de eficiência por funcionário</li>
+        </ul>
+    </div>
+</div>
+
+<div class="section">
+    <h2 onclick="toggleSection(this)">📋 Entrega Esperada</h2>
+    <div class="section-content">
+        <ul>
+            <li>Arquivo .pbix com modelo de dados, medidas e visualizações</li>
+            <li>Apresentação dos insights encontrados</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    function toggleSection(header) {
+        const content = header.nextElementSibling;
+        content.style.display = content.style.display === "none" ? "block" : "none";
+    }
+
+    // Inicialmente mostrar todas as seções
+    document.querySelectorAll('.section-content').forEach(section => {
+        section.style.display = "block";
+    });
+</script>
+
+</body>
+</html>

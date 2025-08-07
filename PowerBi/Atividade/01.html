@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Power BI - Análise de Estoque</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            padding: 30px;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #0078d4;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card.critical {
+            border-left-color: #e74c3c;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+        }
+
+        .card-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #0078d4;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .card.critical .card-number {
+            color: #e74c3c;
+        }
+
+        .card-label {
+            font-size: 1.1em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .chart-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 10px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 600;
+            color: #333;
+            border-top: 3px solid #0078d4;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .critical-row {
+            background-color: #ffe6e6 !important;
+        }
+
+        .critical-row:hover {
+            background-color: #ffcccc !important;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .dashboard {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Dashboard de Análise de Estoque</h1>
+            <p>Sistema de Controle e Monitoramento - Power BI Analytics</p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Cards KPI -->
+            <div class="cards-container">
+                <div class="card">
+                    <span class="card-number" id="totalProdutos">50</span>
+                    <div class="card-label">Total de Produtos</div>
+                </div>
+                <div class="card critical">
+                    <span class="card-number" id="produtosCriticos">46</span>
+                    <div class="card-label">Produtos Críticos</div>
+                </div>
+                <div class="card">
+                    <span class="card-number" id="totalFuncionarios">20</span>
+                    <div class="card-label">Total de Funcionários</div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">📈 Estoque Atual por Produto (Top 10)</h3>
+                    <canvas id="estoqueChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">👥 Movimentações por Funcionário</h3>
+                    <canvas id="funcionarioChart"></canvas>
+                </div>
+
+                <div class="chart-container full-width">
+                    <h3 class="chart-title">📅 Tendência de Movimentações ao Longo do Tempo</h3>
+                    <canvas id="tempoChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabela de Produtos Críticos -->
+            <div class="table-container">
+                <h3 class="chart-title">⚠️ Produtos Abaixo do Estoque Mínimo</h3>
+                <div class="table-responsive">
+                    <table id="produtosCriticosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome do Produto</th>
+                                <th>Categoria</th>
+                                <th>Estoque Mínimo</th>
+                                <th>Estoque Atual</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaCriticos">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados calculados dos CSVs
+        const dashboardData = {
+            totalProdutos: 50,
+            totalFuncionarios: 20,
+            totalCriticos: 46,
+            estoqueAtual: [
+                ["Puxador Alumínio 15cm", 85], ["Cantoneira Reforçada 10cm", 85], 
+                ["Fecho Magnético", 82], ["Corrente Reforçada 3m", 78], 
+                ["Parafuso Autoatarraxante 4mm", 59], ["Dobradiça Inox 3\"", -96],
+                ["Chumbador Mecânico M10", -52], ["Tranca de Portão", -25],
+                ["Dobradiça Zamac 2\"", 0], ["Parafuso Allen 5mm", 0]
+            ],
+            movimentacaoFuncionario: [
+                ["Mariana Oliveira", 163], ["Felipe Andrade", 85], 
+                ["Fernanda Rocha", 78], ["Aline Santos", 7], 
+                ["Carlos Lima", -6], ["Patrícia Gomes", -15], 
+                ["Camila Ribeiro", -96]
+            ],
+            movimentacoesTempo: [
+                ["2023-02", 85], ["2023-03", 85], ["2023-05", 131], 
+                ["2023-07", 82], ["2023-09", -149], ["2023-12", -18]
+            ],
+            produtosCriticos: [
+                {id: 4, nome: "Dobradiça Inox 3\"", categoria: "Dobradiças", minimo: 60, atual: -96},
+                {id: 22, nome: "Chumbador Mecânico M10", categoria: "Chumbadores", minimo: 40, atual: -52},
+                {id: 40, nome: "Tranca de Portão", categoria: "Trancas", minimo: 30, atual: -25},
+                {id: 49, nome: "Parafuso Autoatarraxante 4mm", categoria: "Parafusos", minimo: 90, atual: 59},
+                {id: 1, nome: "Parafuso Phillips 3mm", categoria: "Parafusos", minimo: 100, atual: 0}
+            ]
+        };
+
+        // Configuração global dos gráficos
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.color = '#333';
+
+        // Gráfico de Estoque Atual
+        const estoqueCtx = document.getElementById('estoqueChart').getContext('2d');
+        new Chart(estoqueCtx, {
+            type: 'bar',
+            data: {
+                labels: dashboardData.estoqueAtual.map(item => item[0].substring(0, 15) + '...'),
+                datasets: [{
+                    label: 'Estoque Atual',
+                    data: dashboardData.estoqueAtual.map(item => item[1]),
+                    backgroundColor: function(context) {
+                        const value = context.parsed.y;
+                        return value < 0 ? '#e74c3c' : value < 50 ? '#f39c12' : '#27ae60';
+                    },
+                    borderColor: '#0078d4',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        borderColor: '#0078d4',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Funcionários
+        const funcionarioCtx = document.getElementById('funcionarioChart').getContext('2d');
+        new Chart(funcionarioCtx, {
+            type: 'doughnut',
+            data: {
+                labels: dashboardData.movimentacaoFuncionario.map(item => item[0]),
+                datasets: [{
+                    data: dashboardData.movimentacaoFuncionario.map(item => Math.abs(item[1])),
+                    backgroundColor: [
+                        '#0078d4', '#106ebe', '#005a9e', '#004578', 
+                        '#e74c3c', '#c0392b', '#a93226'
+                    ],
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 20, font: { size: 12 } }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white'
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Tempo
+        const tempoCtx = document.getElementById('tempoChart').getContext('2d');
+        new Chart(tempoCtx, {
+            type: 'line',
+            data: {
+                labels: dashboardData.movimentacoesTempo.map(item => item[0]),
+                datasets: [{
+                    label: 'Movimentações Líquidas',
+                    data: dashboardData.movimentacoesTempo.map(item => item[1]),
+                    borderColor: '#0078d4',
+                    backgroundColor: 'rgba(0, 120, 212, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: '#0078d4',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    }
+                }
+            }
+        });
+
+        // Preencher tabela de produtos críticos
+        function preencherTabelaCriticos() {
+            const tbody = document.getElementById('tabelaCriticos');
+            tbody.innerHTML = '';
+            
+            dashboardData.produtosCriticos.forEach(produto => {
+                const row = tbody.insertRow();
+                row.className = 'critical-row';
+                
+                row.insertCell(0).textContent = produto.id;
+                row.insertCell(1).textContent = produto.nome;
+                row.insertCell(2).textContent = produto.categoria;
+                row.insertCell(3).textContent = produto.minimo;
+                row.insertCell(4).textContent = produto.atual;
+                
+                const statusCell = row.insertCell(5);
+                if (produto.atual < 0) {
+                    statusCell.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">🔴 ESTOQUE NEGATIVO</span>';
+                } else if (produto.atual === 0) {
+                    statusCell.innerHTML = '<span style="color: #f39c12; font-weight: bold;">🟡 ZERADO</span>';
+                } else {
+                    statusCell.innerHTML = '<span style="color: #e67e22; font-weight: bold;">🟠 BAIXO</span>';
+                }
+            });
+        }
+
+        // Animação dos números dos cards
+        function animateNumber(elementId, finalNumber) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const increment = finalNumber / (duration / 16);
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= finalNumber) {
+                    element.textContent = finalNumber;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        // Inicializar dashboard
+        window.addEventListener('load', () => {
+            animateNumber('totalProdutos', dashboardData.totalProdutos);
+            animateNumber('produtosCriticos', dashboardData.totalCriticos);
+            animateNumber('totalFuncionarios', dashboardData.totalFuncionarios);
+            preencherTabelaCriticos();
+        });
+    </script>
+</body>
+</html>
