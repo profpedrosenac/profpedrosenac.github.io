@@ -1,0 +1,51 @@
+ID,Nome do Produto,Categoria,Estoque Mínimo
+1,Parafuso Phillips 3mm,Parafusos,100
+2,Parafuso Allen 5mm,Parafusos,80
+3,Parafuso Sextavado 8mm,Parafusos,90
+4,"Dobradiça Inox 3""",Dobradiças,60
+5,"Dobradiça Zamac 2""",Dobradiças,50
+6,"Dobradiça Reforçada 4""",Dobradiças,40
+7,Fechadura de Embutir,Fechaduras,30
+8,Fechadura Trinco Rápido,Fechaduras,35
+9,Fechadura Digital,Fechaduras,20
+10,Suporte de Prateleira 20cm,Suportes,70
+11,Suporte de Prateleira 30cm,Suportes,60
+12,Suporte de Cantoneira,Suportes,50
+13,Trilho Telescópico 35cm,Trilhos,40
+14,Trilho Telescópico 45cm,Trilhos,40
+15,Trilho Simples 30cm,Trilhos,50
+16,Puxador Alumínio 15cm,Puxadores,30
+17,Puxador Inox 20cm,Puxadores,25
+18,Puxador Embutido,Puxadores,20
+19,Cantoneira Galvanizada 5cm,Cantoneiras,60
+20,Cantoneira Reforçada 10cm,Cantoneiras,50
+21,Cantoneira Plástica,Cantoneiras,70
+22,Chumbador Mecânico M10,Chumbadores,40
+23,Chumbador Químico,Chumbadores,30
+24,Chumbador de Expansão,Chumbadores,35
+25,"Arruela Lisa 1/4""",Arruelas,100
+26,"Arruela de Pressão 3/8""",Arruelas,90
+27,Arruela Dentada,Arruelas,80
+28,Porca Sextavada M6,Porcas,100
+29,Porca Travante M8,Porcas,90
+30,Porca Borboleta M10,Porcas,70
+31,Bucha de Nylon 6mm,Buchas,120
+32,Bucha de Nylon 8mm,Buchas,110
+33,Bucha de Nylon 10mm,Buchas,100
+34,Gancho de Parede,Ganchos,60
+35,Gancho para Bicicleta,Ganchos,40
+36,Gancho Reforçado,Ganchos,50
+37,Corrente de Aço 1m,Correntes,30
+38,Corrente Galvanizada 2m,Correntes,25
+39,Corrente Reforçada 3m,Correntes,20
+40,Tranca de Portão,Trancas,30
+41,Tranca de Janela,Trancas,25
+42,Tranca de Gaveta,Trancas,20
+43,Rodízio Giratório 50mm,Rodízios,40
+44,Rodízio Fixo 75mm,Rodízios,35
+45,Rodízio com Freio 100mm,Rodízios,30
+46,Fecho Magnético,Fechos,50
+47,Fecho de Pressão,Fechos,45
+48,Fecho de Sobrepor,Fechos,40
+49,Parafuso Autoatarraxante 4mm,Parafusos,90
+50,Parafuso para Madeira 6mm,Parafusos,80
