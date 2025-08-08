@@ -794,23 +794,25 @@ IF(
                     <div class="code-block">
                         <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
 StatusProduto = 
+VAR ProdutoAtual = movimentacoes[ID_Produto]
 VAR EstoqueAtual = 
     CALCULATE(
         SUMX(
-            FILTER(movimentacoes, movimentacoes[ID_Produto] = EARLIER(movimentacoes[ID_Produto])),
+            FILTER(movimentacoes, movimentacoes[ID_Produto] = ProdutoAtual),
             IF(movimentacoes[Tipo] = "Entrada", movimentacoes[Quantidade], -movimentacoes[Quantidade])
-        )
+        ),
+        ALL(movimentacoes)
     )
-VAR EstoqueMinimo = 
-    RELATED(produtos[Estoque Mínimo])
+VAR EstoqueMinimo = RELATED(produtos[Estoque Mínimo])
 RETURN
     SWITCH(
         TRUE(),
         EstoqueAtual < 0, "🔴 CRÍTICO - NEGATIVO",
         EstoqueAtual = 0, "🟡 ZERADO",
-        EstoqueAtual < EstoqueMinimo, "🟠 ABAIXO DO MÍNIMO", 
-        EstoqueAtual >= EstoqueMinimo, "🟢 NORMAL"
+        EstoqueAtual < EstoqueMinimo, "🟠 ABAIXO DO MÍNIMO",
+        "🟢 NORMAL"
     )
+
                     </div>
                     <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
                         <strong>Versão Simplificada (alternativa):</strong>
