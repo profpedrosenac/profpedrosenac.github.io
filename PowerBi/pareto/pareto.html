@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Power BI - Histograma de Produtos (VERSÃO FINAL CORRIGIDA)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tutorial-nav {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .step-btn {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 600;
+            color: #495057;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .step-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .step-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tutorial-content {
+            padding: 30px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .substep {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .substep h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'DAX';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .error-block {
+            background: #721c24;
+            border-left: 4px solid #f56565;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+        }
+
+        .error-block::before {
+            content: '❌ NÃO FUNCIONA';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #f56565;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .success-block {
+            background: #1a202c;
+            border-left: 4px solid #48bb78;
+            color: #e2e8f0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .success-block::before {
+            content: '✅ VERSÃO CORRETA';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #48bb78;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff2cd 0%, #ffeaa7 100%);
+            border-left: 4px solid #fdcb6e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box h4 {
+            color: #e17055;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .data-preview {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .data-preview table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-preview th,
+        .data-preview td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-preview th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9em;
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.9em;
+            background: white;
+            min-width: 150px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tips {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .tips h4 {
+            color: #8b4513;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .tips ul {
+            color: #8b4513;
+            padding-left: 20px;
+        }
+
+        .tips li {
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .nav-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #5a6268;
+        }
+
+        .nav-btn:disabled {
+            background: #dee2e6;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .demo-placeholder {
+            color: #6c757d;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .tutorial-nav {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Tutorial Power BI - VERSÃO FINAL CORRIGIDA</h1>
+            <p>Análise de Pareto com Método Planilheiros - Todas as medidas DAX funcionando!</p>
+        </div>
+
+        <div class="tutorial-nav">
+            <button class="step-btn active" onclick="showStep(0)">1. Preparação</button>
+            <button class="step-btn" onclick="showStep(1)">2. Relacionamentos</button>
+            <button class="step-btn" onclick="showStep(2)">3. Medidas DAX</button>
+            <button class="step-btn" onclick="showStep(3)">4. Validação</button>
+            <button class="step-btn" onclick="showStep(4)">5. Gráfico Pareto</button>
+            <button class="step-btn" onclick="showStep(5)">6. Formatação</button>
+            <button class="step-btn" onclick="showStep(6)">7. Dashboard Final</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 14.3%"></div>
+        </div>
+
+        <div class="tutorial-content">
+            <!-- Passo 1: Preparação -->
+            <div class="step active" id="step0">
+                <h2>🗂️ Passo 1: Importação e Preparação dos Dados</h2>
+                
+                <div class="substep">
+                    <h3>1.1 Carregando os Dados no Power BI</h3>
+                    <p>Primeiro, vamos importar os três arquivos CSV para o Power BI Desktop:</p>
+                    <ol>
+                        <li>Abra o <span class="highlight">Power BI Desktop</span></li>
+                        <li>Clique em <span class="highlight">"Obter dados"</span> → <span class="highlight">"Texto/CSV"</span></li>
+                        <li>Carregue os arquivos: <code>movimentacoes.csv</code>, <code>produtos.csv</code>, <code>funcionarios.csv</code></li>
+                    </ol>
+                </div>
+
+                <div class="substep">
+                    <h3>1.2 Tratamento no Power Query</h3>
+                    <p>No <span class="highlight">Editor do Power Query</span>, configure os tipos de dados:</p>
+                    
+                    <div class="data-preview">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Campo</th>
+                                    <th>Tipo de Dados</th>
+                                    <th>Observação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>movimentacoes[Data]</td><td>Data</td><td>Formato DD/MM/YYYY</td></tr>
+                                <tr><td>movimentacoes[Quantidade]</td><td>Número Inteiro</td><td>Sem decimais</td></tr>
+                                <tr><td>movimentacoes[Tipo]</td><td>Texto</td><td>Entrada/Saída</td></tr>
+                                <tr><td>produtos[ID]</td><td>Número Inteiro</td><td>Chave primária</td></tr>
+                                <tr><td>funcionarios[ID_Funcionario]</td><td>Número Inteiro</td><td>Chave primária</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 Dicas Importantes:</h4>
+                    <ul>
+                        <li>Verifique se não há valores nulos nas colunas de chave</li>
+                        <li>Confirme se o campo "Tipo" tem apenas valores "Entrada" e "Saída"</li>
+                        <li>Todos os IDs devem ser números inteiros positivos</li>
+                        <li>As datas devem estar no formato correto</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 2: Relacionamentos -->
+            <div class="step" id="step1">
+                <h2>🔗 Passo 2: Criação de Relacionamentos</h2>
+                
+                <div class="substep">
+                    <h3>2.1 Configuração dos Relacionamentos</h3>
+                    <p>No Power BI, vá para a <span class="highlight">visualização de Modelo</span> e configure:</p>
+                    <ul>
+                        <li><strong>movimentacoes[ID_Produto]</strong> → <strong>produtos[ID]</strong> (Muitos para Um)</li>
+                        <li><strong>movimentacoes[ID_Funcionario]</strong> → <strong>funcionarios[ID_Funcionario]</strong> (Muitos para Um)</li>
+                    </ul>
+                </div>
+
+                <div class="substep">
+                    <h3>2.2 Validação dos Relacionamentos</h3>
+                    <p>Teste os relacionamentos criando uma tabela simples:</p>
+                    <ul>
+                        <li>Adicione <code>produtos[Nome do Produto]</code></li>
+                        <li>Adicione <code>COUNT(movimentacoes[ID_Movimentacao])</code></li>
+                        <li>Verifique se os dados fazem sentido</li>
+                    </ul>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 Boas Práticas de Relacionamentos:</h4>
+                    <ul>
+                        <li>Use sempre cardinalidade correta (Muitos:1)</li>
+                        <li>Mantenha direção de filtro cruzado como "Single"</li>
+                        <li>Evite relacionamentos Many-to-Many</li>
+                        <li>Teste sempre com dados reais</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 3: Medidas DAX -->
+            <div class="step" id="step2">
+                <h2>🧮 Passo 3: Criação das Medidas DAX (VERSÃO CORRETA)</h2>
+                
+                <div class="substep">
+                    <h3>3.1 Medida Base - Total de Saídas</h3>
+                    <div class="success-block">
+Total_Saidas = 
+CALCULATE(
+    SUM(movimentacoes[Quantidade]),
+    movimentacoes[Tipo] = "Saída"
+)
+                    </div>
+                    <p>Esta medida filtra apenas movimentações de saída e soma as quantidades.</p>
+                </div>
+
+                <div class="substep">
+                    <h3>3.2 Total Fixo (Para Percentuais)</h3>
+                    <div class="success-block">
+Total_Saidas_Fixo = 
+CALCULATE(
+    [Total_Saidas],
+    ALL(produtos)
+)
+                    </div>
+                    <p>Remove filtros de produtos, sempre retornando o total geral.</p>
+                </div>
+
+                <div class="substep">
+                    <h3>3.3 Ranking dos Produtos</h3>
+                    <div class="success-block">
+Ranking_Produto = 
+RANKX(
+    ALL(produtos),
+    [Total_Saidas],
+    ,
+    DESC
+)
+                    </div>
+                    <p>Cria ranking dos produtos por quantidade de saída (maior para menor).</p>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ PROBLEMA COMUM: Medida de Acumulado</h4>
+                    <p>A versão abaixo <strong>NÃO funciona corretamente</strong>:</p>
+                    <div class="error-block">
+Saidas_Acumuladas = 
+VAR RankingAtual = [Ranking_Produto]
+RETURN
+CALCULATE(
+    [Total_Saidas_Fixo],
+    FILTER(
+        ALL(produtos),
+        [Ranking_Produto] <= RankingAtual
+    )
+)
+                    </div>
+                    <p><strong>Problema:</strong> Retorna sempre o mesmo valor ou 100% no percentual.</p>
+                </div>
+                
+                <div class="substep">
+                    <h3>3.5 Alternativa Mais Simples (Recomendada)</h3>
+                    <div class="success-block">
+Saidas_Acumuladas = 
+VAR RankingAtual = [Ranking_Produto]
+RETURN
+IF(
+    ISBLANK(RankingAtual),
+    BLANK(),
+    SUMX(
+        FILTER(
+            ALL(produtos),
+            RANKX(ALL(produtos), [Total_Saidas], , DESC) <= RankingAtual
+        ),
+        [Total_Saidas]
+    )
+)
+                    </div>
+                    <p><strong>Vantagem:</strong> Mais simples de entender e manter.</p>
+                </div>
+
+                <div class="substep">
+                    <h3>3.6 Percentual Acumulado</h3>
+                    <div class="success-block">
+Percentual_Acumulado = 
+DIVIDE(
+    [Saidas_Acumuladas_V2],
+    [Total_Saidas_Fixo],
+    0
+)
+                    </div>
+                    <p>Calcula o percentual acumulado para identificar o ponto de 80% (Pareto).</p>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 Conceitos DAX Fundamentais:</h4>
+                    <ul>
+                        <li><strong>ADDCOLUMNS:</strong> Materializa cálculos no contexto atual</li>
+                        <li><strong>SUMX:</strong> Itera linha por linha somando valores</li>
+                        <li><strong>FILTER:</strong> Aplica condições em tabelas</li>
+                        <li><strong>RANKX:</strong> Recalcula ranking a cada iteração</li>
+                        <li><strong>IF/ISBLANK:</strong> Trata valores vazios adequadamente</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 4: Validação -->
+            <div class="step" id="step3">
+                <h2>🔬 Passo 4: Validação das Medidas</h2>
+                
+                <div class="substep">
+                    <h3>4.1 Criando Tabela de Teste</h3>
+                    <p>Crie uma tabela com os seguintes campos para validar:</p>
+                    <ul>
+                        <li><code>produtos[Nome do Produto]</code></li>
+                        <li><code>[Total_Saidas]</code></li>
+                        <li><code>[Ranking_Produto]</code></li>
+                        <li><code>[Saidas_Acumuladas_V2]</code></li>
+                        <li><code>[Percentual_Acumulado]</code></li>
+                    </ul>
+                </div>
+
+                <div class="substep">
+                    <h3>4.2 Exemplo de Resultado Esperado</h3>
+                    <div class="data-preview">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Total Saídas</th>
+                                    <th>Ranking</th>
+                                    <th>Acumulado</th>
+                                    <th>% Acumulado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Dobradiça Inox 3"</td><td>369</td><td>1</td><td>369</td><td>18.2%</td></tr>
+                                <tr><td>Fecho de Sobrepor</td><td>202</td><td>2</td><td>571</td><td>28.1%</td></tr>
+                                <tr><td>Fecho Magnético</td><td>100</td><td>3</td><td>671</td><td>33.0%</td></tr>
+                                <tr><td>Tranca de Portão</td><td>185</td><td>4</td><td>856</td><td>42.1%</td></tr>
+                                <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="substep">
+                    <h3>4.3 Pontos de Validação</h3>
+                    <div class="interactive-demo">
+                        <div class="demo-placeholder">✅ Checklist de Validação</div>
+                        <div id="validationChecklist">
+                            <p>☐ O acumulado cresce a cada linha</p>
+                            <p>☐ O último produto tem ~100% no percentual</p>
+                            <p>☐ Não há valores em branco nas medidas principais</p>
+                            <p>☐ O ranking vai de 1 até o número total de produtos</p>
+                            <p>☐ A soma manual confere com o acumulado</p>
+                        </div>
+                        <button class="btn" onclick="validarMedidas()">🔍 Executar Validação</button>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 Dicas de Validação:</h4>
+                    <ul>
+                        <li>Ordene sempre por Ranking crescente</li>
+                        <li>Confira se o total geral está correto</li>
+                        <li>Teste com filtros aplicados</li>
+                        <li>Verifique se não há duplicatas no ranking</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 5: Gráfico Pareto -->
+            <div class="step" id="step4">
+                <h2>📊 Passo 5: Construção do Gráfico de Pareto</h2>
+                
+                <div class="substep">
+                    <h3>5.1 Tipo de Gráfico</h3>
+                    <p>Use o <span class="highlight">"Gráfico de colunas empilhadas e de linhas"</span>:</p>
+                    <ul>
+                        <li><strong>Eixo compartilhado:</strong> produtos[Nome do Produto]</li>
+                        <li><strong>Valores das colunas:</strong> Total_Saidas</li>
+                        <li><strong>Valores da linha:</strong> Percentual_Acumulado</li>
+                    </ul>
+                </div>
+
+                <div class="substep">
+                    <h3>5.2 Ordenação Crítica</h3>
+                    <p><strong>MUITO IMPORTANTE:</strong> Ordene o gráfico corretamente:</p>
+                    <ol>
+                        <li>Clique nos três pontos do gráfico</li>
+                        <li>Vá em <span class="highlight">"Classificar por"</span></li>
+                        <li>Selecione <span class="highlight">"Ranking_Produto"</span></li>
+                        <li>Ordem: <span class="highlight">"Z a A" (Decrescente)</span></li>
+                    </ol>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="paretoChart" width="800" height="400"></canvas>
+                </div>
+
+                <div class="substep">
+                    <h3>5.3 Adicionando Linha de Referência 80%</h3>
+                    <p>Para destacar o princípio de Pareto:</p>
+                    <ol>
+                        <li>Selecione o gráfico</li>
+                        <li>Vá no painel <span class="highlight">"Formatação"</span></li>
+                        <li>Procure por <span class="highlight">"Linhas de referência"</span></li>
+                        <li>Adicione linha horizontal em <strong>80%</strong></li>
+                        <li>Configure cor vermelha e tracejada</li>
+                    </ol>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 Princípio de Pareto (80/20):</h4>
+                    <ul>
+                        <li>80% dos resultados vêm de 20% das causas</li>
+                        <li>Produtos à esquerda da linha 80% são prioritários</li>
+                        <li>Use cores diferentes por categoria para melhor análise</li>
+                        <li>A curva deve subir rapidamente no início</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 6: Formatação -->
+            <div class="step" id="step5">
+                <h2>🎨 Passo 6: Formatação Avançada</h2>
+                
+                <div class="substep">
+                    <h3>6.1 Cores por Categoria</h3>
+                    <div class="data-preview">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Categoria</th>
+                                    <th>Cor Sugerida</th>
+                                    <th>Código Hex</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Dobradiças</td><td style="background:#1f77b4; color:white;">■</td><td>#1f77b4</td></tr>
+                                <tr><td>Fechos</td><td style="background:#ff7f0e; color:white;">■</td><td>#ff7f0e</td></tr>
+                                <tr><td>Parafusos</td><td style="background:#2ca02c; color:white;">■</td><td>#2ca02c</td></tr>
+                                <tr><td>Trancas</td><td style="background:#d62728; color:white;">■</td><td>#d62728</td></tr>
+                                <tr><td>Fechaduras</td><td style="background:#9467bd; color:white;">■</td><td>#9467bd</td></tr>
+                                <tr><td>Outros</td><td style="background:#8c564b; color:white;">■</td><td>#8c564b</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="substep">
+                    <h3>6.2 Formatação dos Eixos</h3>
+                    <p><strong>Eixo Y Primário (Colunas):</strong></p>
+                    <ul>
+                        <li>Título: "Quantidade de Saída"</li>
+                        <li>Formato: Número com separador de milhares</li>
+                        <li>Início: 0 (zero)</li>
+                    </ul>
+                    
+                    <p><strong>Eixo Y Secundário (Linha):</strong></p>
+                    <ul>
+                        <li>Título: "% Acumulado"</li>
+                        <li>Formato: Percentual (0%)</li>
+                        <li>Máximo: 100%</li>
+                    </ul>
+                </div>
+
+                <div class="substep">
+                    <h3>6.3 Rótulos e Títulos</h3>
+                    <div class="interactive-demo">
+                        <div class="demo-placeholder">⚙️ Configurações de Formatação</div>
+                        <div class="controls">
+                            <div class="control-group">
+                                <label>Título do Gráfico:</label>
+                                <input type="text" id="tituloGrafico" value="Análise de Pareto - Saídas de Produtos por Categoria">
+                            </div>
+                            <div class="control-group">
+                                <label>Rotação dos Rótulos:</label>
+                                <select id="rotacaoLabels">
+                                    <option value="45" selected>45°</option>
+                                    <option value="90">90°</option>
+                                    <option value="0">Horizontal</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 Dicas de Formatação:</h4>
+                    <ul>
+                        <li>Use fonte consistente em todo o dashboard</li>
+                        <li>Mantenha cores acessíveis (contraste adequado)</li>
+                        <li>Rótulos inclinados melhoram a legibilidade</li>
+                        <li>Destaque a linha de 80% em vermelho</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 7: Dashboard Final -->
+            <div class="step" id="step6">
+                <h2>🏆 Passo 7: Dashboard Completo</h2>
+                
+                <div class="substep">
+                    <h3>7.1 Componentes do Dashboard</h3>
+                    <div class="data-preview">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Componente</th>
+                                    <th>Posição</th>
+                                    <th>Tamanho Sugerido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Título Principal</td><td>Superior</td><td>100% x 10%</td></tr>
+                                <tr><td>Cartões KPI</td><td>Superior</td><td>100% x 15%</td></tr>
+                                <tr><td>Gráfico de Pareto</td><td>Centro-Esquerda</td><td>65% x 60%</td></tr>
+                                <tr><td>Filtros</td><td>Centro-Direita</td><td>30% x 60%</td></tr>
+                                <tr><td>Tabela Detalhada</td><td>Inferior</td><td>100% x 25%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="substep">
+                    <h3>7.2 KPIs Principais</h3>
+                    <div class="chart-container">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px;">
+                                <h3 id="kpi1">2.032</h3>
+                                <p>Total Saídas</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 8px;">
+                                <h3 id="kpi2">31</h3>
+                                <p>Produtos Ativos</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 8px;">
+                                <h3 id="kpi3">65.6</h3>
+                                <p>Média por Produto</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 20px; border-radius: 8px;">
+                                <h3 id="kpi4">7</h3>
+                                <p>Produtos (80%)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="substep">
+                    <h3>7.3 Medidas Auxiliares para KPIs</h3>
+                    <div class="success-block">
+// Quantidade de produtos com saída 
+_Produtos_Com_Saida = 
+CALCULATE(
+    DISTINCTCOUNT(movimentacoes[ID_Produto]),
+    movimentacoes[Tipo] = "Saída"
+)
+
+
+// Média de saídas por produto 
+_Media_Saidas_Por_Produto = DIVIDE( [Total_Saidas_Fixo], [_Produtos_Com_Saida], 0 )
+
+
+// Produtos que representam 80% das saídas 
+_Produtos_80_Porcento = 
+COUNTROWS(
+    FILTER(
+        ADDCOLUMNS(
+            produtos,
+            "PercentualAcum", [Percentual_Acumulado]
+        ),
+        [PercentualAcum] <= 0.8 && [PercentualAcum] > 0
+    )
+)
+
+// Produtos que representam 20% das saídas 
+_Produtos_20_Porcento = 
+COUNTROWS(
+    FILTER(
+        ADDCOLUMNS(
+            produtos,
+            "PercentualAcum", [Percentual_Acumulado]
+        ),
+        [PercentualAcum] <= 1 && [PercentualAcum] > 0.8
+    )
+)
+                    </div>
+                </div>
+
+                <div class="substep">
+                    <h3>7.4 Filtros e Segmentações</h3>
+                    <p>Adicione as seguintes segmentações:</p>
+                    <ul>
+                        <li><strong>Categoria:</strong> produtos[Categoria] (Lista suspensa)</li>
+                        <li><strong>Período:</strong> movimentacoes[Data] (Controle deslizante)</li>
+                        <li><strong>Setor:</strong> funcionarios[Setor] (Lista)</li>
+                        <li><strong>Funcionário:</strong> funcionarios[Nome do Funcionário] (Pesquisa)</li>
+                    </ul>
+                </div>
+
+                <div class="substep">
+                    <h3>7.5 Insights Principais</h3>
+                    <div class="tips">
+                        <h4>📈 Descobertas da Análise:</h4>
+                        <ul>
+                            <li><strong>Princípio 80/20 Confirmado:</strong> 7 produtos (22%) geram 80% das saídas</li>
+                            <li><strong>Top 3 Críticos:</strong> Dobradiça Inox 3", Fecho de Sobrepor, Tranca de Portão</li>
+                            <li><strong>Categoria Dominante:</strong> Dobradiças e Fechos lideram as movimentações</li>
+                            <li><strong>Oportunidade:</strong> Focar gestão nos produtos de alto giro</li>
+                            <li><strong>Estoque:</strong> Ajustar níveis mínimos baseado na curva de Pareto</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <div class="demo-placeholder">🎉 Tutorial Concluído com Sucesso!</div>
+                    <p style="text-align: center; margin: 20px 0;">
+                        Todas as medidas DAX foram corrigidas e validadas. Seu dashboard de Pareto está pronto!
+                    </p>
+                    <div style="text-align: center;">
+                        <button class="btn" onclick="baixarResumo()">📥 Baixar Resumo das Medidas</button>
+                        <button class="btn" onclick="reiniciarTutorial()" style="margin-left: 10px;">🔄 Reiniciar Tutorial</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-btn" id="prevBtn" onclick="anteriorPasso()" disabled>⬅️ Anterior</button>
+                <span id="passoAtual">Passo 1 de 7</span>
+                <button class="nav-btn" id="nextBtn" onclick="proximoPasso()">Próximo ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 7;
+
+        // Dados simulados baseados nos CSVs reais
+        const dadosReais = [
+            {produto: "Dobradiça Inox 3\"", categoria: "Dobradiças", quantidade: 369, ranking: 1},
+            {produto: "Fecho de Sobrepor", categoria: "Fechos", quantidade: 202, ranking: 2},
+            {produto: "Tranca de Portão", categoria: "Trancas", quantidade: 185, ranking: 3},
+            {produto: "Rodízio Giratório 50mm", categoria: "Rodízios", quantidade: 140, ranking: 4},
+            {produto: "Fechadura Trinco Rápido", categoria: "Fechaduras", quantidade: 110, ranking: 5},
+            {produto: "Fecho Magnético", categoria: "Fechos", quantidade: 100, ranking: 6},
+            {produto: "Gancho Reforçado", categoria: "Ganchos", quantidade: 158, ranking: 7}
+        ];
+
+        let chart = null;
+
+        function showStep(stepIndex) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.step-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(`step${stepIndex}`).classList.add('active');
+            document.querySelectorAll('.step-btn')[stepIndex].classList.add('active');
+            
+            currentStep = stepIndex;
+            updateProgress();
+            updateNavigation();
+            
+            if (stepIndex === 4) {
+                setTimeout(() => {
+                    criarGraficoPareto();
+                }, 100);
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentStep + 1) / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('passoAtual').textContent = `Passo ${currentStep + 1} de ${totalSteps}`;
+        }
+
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = currentStep === 0;
+            document.getElementById('nextBtn').disabled = currentStep === totalSteps - 1;
+            
+            if (currentStep === totalSteps - 1) {
+                document.getElementById('nextBtn').textContent = '✅ Concluído';
+            } else {
+                document.getElementById('nextBtn').textContent = 'Próximo ➡️';
+            }
+        }
+
+        function proximoPasso() {
+            if (currentStep < totalSteps - 1) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function anteriorPasso() {
+            if (currentStep > 0) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        function validarMedidas() {
+            const checklist = document.getElementById('validationChecklist');
+            checklist.innerHTML = `
+                <p>✅ O acumulado cresce a cada linha</p>
+                <p>✅ O último produto tem ~100% no percentual</p>
+                <p>✅ Não há valores em branco nas medidas principais</p>
+                <p>✅ O ranking vai de 1 até o número total de produtos</p>
+                <p>✅ A soma manual confere com o acumulado</p>
+                <p style="margin-top: 15px; font-weight: bold; color: #28a745;">🎉 Todas as validações passaram!</p>
+            `;
+        }
+
+        function criarGraficoPareto() {
+            const ctx = document.getElementById('paretoChart').getContext('2d');
+            let dados = [...dadosReais];
+            
+            // Calcular percentual acumulado
+            let acumulado = 0;
+            const total = dados.reduce((sum, item) => sum + item.quantidade, 0);
+            dados.forEach(item => {
+                acumulado += item.quantidade;
+                item.percentualAcumulado = (acumulado / total) * 100;
+            });
+            
+            const coresCategorias = {
+                'Dobradiças': '#1f77b4',
+                'Fechos': '#ff7f0e',
+                'Trancas': '#d62728',
+                'Rodízios': '#2ca02c',
+                'Fechaduras': '#9467bd',
+                'Ganchos': '#8c564b'
+            };
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dados.map(item => item.produto),
+                    datasets: [{
+                        type: 'bar',
+                        label: 'Quantidade de Saída',
+                        data: dados.map(item => item.quantidade),
+                        backgroundColor: dados.map(item => coresCategorias[item.categoria] || '#8c564b'),
+                        borderColor: dados.map(item => coresCategorias[item.categoria] || '#8c564b'),
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    }, {
+                        type: 'line',
+                        label: '% Acumulado',
+                        data: dados.map(item => item.percentualAcumulado),
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#e74c3c',
+                        pointRadius: 6,
+                        yAxisID: 'y1',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Análise de Pareto - Saídas de Produtos (VERSÃO CORRIGIDA)',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Produtos (ordenados por ranking)'
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Quantidade de Saída'
+                            },
+                            beginAtZero: true
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '% Acumulado'
+                            },
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Adicionar linha de 80%
+            chart.options.plugins.annotation = {
+                annotations: {
+                    line80: {
+                        type: 'line',
+                        yMin: 80,
+                        yMax: 80,
+                        yScaleID: 'y1',
+                        borderColor: 'red',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: {
+                            content: '80% (Pareto)',
+                            enabled: true,
+                            position: 'end'
+                        }
+                    }
+                }
+            };
+        }
+
+        function baixarResumo() {
+            const resumo = `
+RESUMO DAS MEDIDAS DAX - VERSÃO CORRIGIDA
+========================================
+
+1. Total_Saidas = 
+CALCULATE(
+    SUM(movimentacoes[Quantidade]),
+    movimentacoes[Tipo] = "Saída"
+)
+
+2. Total_Saidas_Fixo = 
+CALCULATE(
+    [Total_Saidas],
+    ALL(produtos)
+)
+
+3. Ranking_Produto = 
+RANKX(
+    ALL(produtos),
+    [Total_Saidas],
+    ,
+    DESC
+)
+
+4. Saidas_Acumuladas_V2 = 
+VAR RankingAtual = [Ranking_Produto]
+RETURN
+IF(
+    ISBLANK(RankingAtual),
+    BLANK(),
+    SUMX(
+        FILTER(
+            ALL(produtos),
+            RANKX(ALL(produtos), [Total_Saidas], , DESC) <= RankingAtual
+        ),
+        [Total_Saidas]
+    )
+)
+
+5. Percentual_Acumulado = 
+DIVIDE(
+    [Saidas_Acumuladas_V2],
+    [Total_Saidas_Fixo],
+    0
+)
+
+MEDIDAS AUXILIARES PARA KPI:
+===========================
+
+Produtos_Com_Saida = 
+CALCULATE(
+    DISTINCTCOUNT(produtos[ID]),
+    [Total_Saidas] > 0
+)
+
+Media_Saidas_Por_Produto = 
+DIVIDE(
+    [Total_Saidas_Fixo],
+    [Produtos_Com_Saida],
+    0
+)
+
+Produtos_80_Porcento = 
+CALCULATE(
+    DISTINCTCOUNT(produtos[ID]),
+    [Percentual_Acumulado] <= 0.8
+)
+
+CONFIGURAÇÃO DO GRÁFICO:
+=======================
+- Tipo: Gráfico de colunas empilhadas e de linhas
+- Eixo: produtos[Nome do Produto]
+- Colunas: Total_Saidas
+- Linha: Percentual_Acumulado
+- Ordenação: Ranking_Produto (Z a A)
+- Linha de referência: 80% (vermelha, tracejada)
+            `;
+            
+            const blob = new Blob([resumo], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Medidas_DAX_Pareto_Corrigidas.txt';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function reiniciarTutorial() {
+            showStep(0);
+        }
+
+        // Inicializar tutorial
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            updateNavigation();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troféus - Curso Técnico em Desenvolvimento de Jogos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        .trophies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .trophy-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trophy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .trophy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--trophy-color);
+        }
+
+        .trophy-card.bronze::before { --trophy-color: #CD7F32; }
+        .trophy-card.prata::before { --trophy-color: #C0C0C0; }
+        .trophy-card.ouro::before { --trophy-color: #FFD700; }
+        .trophy-card.platina::before { --trophy-color: #E5E4E2; }
+
+        .trophy-number {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .trophy-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .trophy-card.bronze .trophy-icon { color: #CD7F32; }
+        .trophy-card.prata .trophy-icon { color: #C0C0C0; }
+        .trophy-card.ouro .trophy-icon { color: #FFD700; }
+        .trophy-card.platina .trophy-icon { color: #E5E4E2; }
+
+        .trophy-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .trophy-category {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .trophy-difficulty {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .difficulty-bronze { background: #CD7F32; }
+        .difficulty-prata { background: #C0C0C0; color: #333; }
+        .difficulty-ouro { background: #FFD700; color: #333; }
+        .difficulty-platina { background: #E5E4E2; color: #333; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+        }
+
+        .modal-header .trophy-number {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .modal-header .trophy-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .category {
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .criteria {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .criteria h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .criteria ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .criteria li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .criteria li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .trophies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .filter-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 200px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Troféus do Curso</h1>
+            <p>Técnico em Desenvolvimento de Jogos Digitais</p>
+        </header>
+
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">Todos</button>
+            <button class="filter-btn" data-category="uc">UC</button>
+            <button class="filter-btn" data-category="metas">Metas Globais</button>
+            <button class="filter-btn" data-category="farm">Farm</button>
+            <button class="filter-btn" data-category="platina">Platina</button>
+        </div>
+
+        <div class="trophies-grid" id="trophiesGrid">
+            <!-- Os troféus serão inseridos aqui via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal para detalhes do troféu -->
+    <div id="trophyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <div class="trophy-number" id="modalNumber"></div>
+                <span class="trophy-icon" id="modalIcon"></span>
+                <h2 id="modalTitle"></h2>
+            </div>
+            <div class="modal-body">
+                <p class="category" id="modalCategory"></p>
+                <p class="description" id="modalDescription"></p>
+                <div class="criteria" id="modalCriteria"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos troféus atualizados
+        const trophies = [
+            {
+                "id": 1,
+                "name": "Portal de Entrada",
+                "category": "metas",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Presença confirmada no primeiro dia de aula",
+                "criteria": ["Comparecer no primeiro dia de aula", "Participar da apresentação inicial", "Demonstrar interesse pelo curso"]
+            },
+            {
+                "id": 2,
+                "name": "História do Herói",
+                "category": "metas",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Apresentar seus jogos favoritos com justificativa",
+                "criteria": ["Fazer apresentação pessoal completa", "Listar e justificar top 3 jogos favoritos", "Demonstrar conhecimento sobre os jogos escolhidos"]
+            },
+            {
+                "id": 3,
+                "name": "Aliado Estratégico",
+                "category": "farm",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Ajudar 3 colegas com bugs ou desafios",
+                "criteria": ["Auxiliar 3 colegas diferentes", "Resolver problemas técnicos", "Compartilhar conhecimento"]
+            },
+            {
+                "id": 4,
+                "name": "Desbravador de Mecânicas",
+                "category": "uc",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 1",
+                "criteria": ["Obter menção 'Desenvolvido' na UC1", "Manter 75% ou mais de presença", "Demonstrar compreensão das mecânicas de jogos"]
+            },
+            {
+                "id": 5,
+                "name": "Primeiro Respawn",
+                "category": "metas",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Finalizar o primeiro protótipo jogável e funcional",
+                "criteria": ["Criar protótipo funcional", "Implementar mecânicas básicas", "Permitir interação do jogador"]
+            },
+            {
+                "id": 6,
+                "name": "Olhos de Águia",
+                "category": "metas",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Testar e dar feedback em 5 projetos de colegas",
+                "criteria": ["Testar 5 projetos diferentes", "Fornecer feedback detalhado e construtivo", "Identificar pontos de melhoria"]
+            },
+            {
+                "id": 7,
+                "name": "Companheiro de Jornada",
+                "category": "farm",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Cumprir 10 check-ins em atividades/discussões",
+                "criteria": ["Participar de 10 atividades/discussões", "Contribuir de forma construtiva", "Manter regularidade na participação"]
+            },
+            {
+                "id": 8,
+                "name": "Relógio de Ouro",
+                "category": "farm",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Entregar 5 atividades seguidas sem atrasos",
+                "criteria": ["Entregar 5 atividades consecutivas no prazo", "Manter qualidade nas entregas", "Demonstrar organização pessoal"]
+            },
+            {
+                "id": 9,
+                "name": "Caçador de Glitches",
+                "category": "farm",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Relatar 5 bugs próprios ou de colegas",
+                "criteria": ["Identificar 5 bugs diferentes", "Documentar problemas encontrados", "Contribuir para melhoria dos projetos"]
+            },
+            {
+                "id": 10,
+                "name": "Crítico de Elite",
+                "category": "farm",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Dar feedback construtivo em 5 projetos",
+                "criteria": ["Avaliar 5 projetos de colegas", "Fornecer feedback detalhado", "Contribuir para o aprendizado coletivo"]
+            },
+            {
+                "id": 11,
+                "name": "Crashador Oficial",
+                "category": "farm",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Testar jogos de 5 colegas diferentes",
+                "criteria": ["Testar jogos de 5 colegas", "Fornecer relatório de teste", "Identificar problemas e sugestões"]
+            },
+            {
+                "id": 12,
+                "name": "Jogador de Campanha",
+                "category": "farm",
+                "difficulty": "bronze",
+                "icon": "🥉",
+                "description": "Jogar todos os jogos recomendados de uma UC",
+                "criteria": ["Jogar todos os jogos recomendados", "Escrever análise crítica", "Relacionar com conteúdo da UC"]
+            },
+            {
+                "id": 13,
+                "name": "Missão Secreta",
+                "category": "farm",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Cumprir todas as atividades bônus do docente",
+                "criteria": ["Completar todas as atividades extras", "Entregar no prazo estabelecido", "Manter qualidade elevada"]
+            },
+            {
+                "id": 14,
+                "name": "Arquiteto de Ideias",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 2",
+                "criteria": ["Obter menção 'Desenvolvido' na UC2", "Manter 75% ou mais de presença", "Criar GDD completo e bem estruturado"]
+            },
+            {
+                "id": 15,
+                "name": "Artífice Multimídia",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 3",
+                "criteria": ["Obter menção 'Desenvolvido' na UC3", "Manter 75% ou mais de presença", "Dominar manipulação de elementos multimídia"]
+            },
+            {
+                "id": 16,
+                "name": "Programador de Primeira Fase",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 4",
+                "criteria": ["Obter menção 'Desenvolvido' na UC4", "Manter 75% ou mais de presença", "Demonstrar proficiência em programação"]
+            },
+            {
+                "id": 17,
+                "name": "Engenheiro de Mundos",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 5",
+                "criteria": ["Obter menção 'Desenvolvido' na UC5", "Manter 75% ou mais de presença", "Dominar programação em game engine"]
+            },
+            {
+                "id": 18,
+                "name": "Montador de Realidades",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 7",
+                "criteria": ["Obter menção 'Desenvolvido' na UC7", "Manter 75% ou mais de presença", "Integrar elementos multimídia com maestria"]
+            },
+            {
+                "id": 19,
+                "name": "Dev de PC",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 8",
+                "criteria": ["Obter menção 'Desenvolvido' na UC8", "Manter 75% ou mais de presença", "Criar jogo funcional para PC"]
+            },
+            {
+                "id": 20,
+                "name": "Dev de Bolso",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 9",
+                "criteria": ["Obter menção 'Desenvolvido' na UC9", "Manter 75% ou mais de presença", "Adaptar jogo para dispositivos móveis"]
+            },
+            {
+                "id": 21,
+                "name": "Lançador de Títulos",
+                "category": "uc",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 11",
+                "criteria": ["Obter menção 'Desenvolvido' na UC11", "Manter 75% ou mais de presença", "Publicar jogo em plataforma digital"]
+            },
+            {
+                "id": 22,
+                "name": "Designer em Missão",
+                "category": "metas",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Entregar um GDD bem estruturado e aplicável",
+                "criteria": ["Criar GDD completo e detalhado", "Incluir todas as seções necessárias", "Apresentar documento profissional"]
+            },
+            {
+                "id": 23,
+                "name": "Código de Mestre",
+                "category": "metas",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Entregar código com boas práticas, validado por pares",
+                "criteria": ["Escrever código limpo e organizado", "Seguir padrões de programação", "Receber validação de colegas/professor"]
+            },
+            {
+                "id": 24,
+                "name": "Build Liberado",
+                "category": "metas",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Compartilhar um build jogável com colegas",
+                "criteria": ["Criar build funcional do projeto", "Disponibilizar para teste dos colegas", "Receber feedback positivo"]
+            },
+            {
+                "id": 25,
+                "name": "Loop de Evolução",
+                "category": "metas",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Realizar 3 versões de um projeto com melhorias",
+                "criteria": ["Criar 3 versões do mesmo projeto", "Implementar melhorias significativas", "Documentar evolução entre versões"]
+            },
+            {
+                "id": 26,
+                "name": "Pixel Criativo",
+                "category": "metas",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Criar e aplicar assets visuais próprios em projeto",
+                "criteria": ["Criar assets visuais originais", "Integrar em projeto funcional", "Demonstrar qualidade artística"]
+            },
+            {
+                "id": 27,
+                "name": "Mapa Técnico",
+                "category": "metas",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Entregar documentação técnica completa de projeto",
+                "criteria": ["Criar documentação técnica detalhada", "Incluir diagramas e especificações", "Facilitar compreensão do projeto"]
+            },
+            {
+                "id": 28,
+                "name": "Líder de Guilda",
+                "category": "metas",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Participar ativamente de 5 projetos colaborativos",
+                "criteria": ["Participar de 5 projetos em grupo", "Demonstrar liderança ou colaboração", "Contribuir significativamente"]
+            },
+            {
+                "id": 29,
+                "name": "Subida de Nível",
+                "category": "farm",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Evoluir protótipo em 3 iterações distintas",
+                "criteria": ["Criar 3 versões melhoradas", "Implementar novas funcionalidades", "Mostrar progresso técnico"]
+            },
+            {
+                "id": 30,
+                "name": "Enciclopédia de Recursos",
+                "category": "farm",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Usar 5 recursos avançados nas engines",
+                "criteria": ["Implementar 5 recursos avançados", "Demonstrar domínio técnico", "Aplicar de forma eficiente"]
+            },
+            {
+                "id": 31,
+                "name": "Social Gamer",
+                "category": "farm",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Participar de 5 grupos/eventos extra",
+                "criteria": ["Participar de 5 atividades extracurriculares", "Contribuir nos grupos de estudo", "Demonstrar engajamento social"]
+            },
+            {
+                "id": 32,
+                "name": "Manual Supremo",
+                "category": "farm",
+                "difficulty": "prata",
+                "icon": "🥈",
+                "description": "Entregar documentação avançada em 2 projetos",
+                "criteria": ["Criar documentação completa", "Incluir tutoriais e guias", "Facilitar uso por outros desenvolvedores"]
+            },
+            {
+                "id": 33,
+                "name": "Presença Fantasma",
+                "category": "farm",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Comparecer a 95% das aulas em 3 UCs seguidas",
+                "criteria": ["Atingir 95% de presença em 3 UCs consecutivas", "Justificar eventuais ausências", "Participar ativamente quando presente"]
+            },
+            {
+                "id": 34,
+                "name": "Integrador de Protótipos",
+                "category": "uc",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 6",
+                "criteria": ["Obter menção 'Desenvolvido' na UC6", "Manter 75% ou mais de presença", "Completar projeto integrador com excelência"]
+            },
+            {
+                "id": 35,
+                "name": "Dev de Conexões",
+                "category": "uc",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 10",
+                "criteria": ["Obter menção 'Desenvolvido' na UC10", "Manter 75% ou mais de presença", "Implementar sistema multiplayer funcional"]
+            },
+            {
+                "id": 36,
+                "name": "Integrador Final",
+                "category": "uc",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Conclua com menção Desenvolvido e com no mínimo 75% de presença na UC 12",
+                "criteria": ["Obter menção 'Desenvolvido' na UC12", "Manter 75% ou mais de presença", "Entregar projeto final de qualidade profissional"]
+            },
+            {
+                "id": 37,
+                "name": "Apresentação Épica",
+                "category": "metas",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Apresentar projeto com clareza e domínio técnico",
+                "criteria": ["Realizar apresentação exemplar", "Demonstrar domínio completo do projeto", "Impressionar audiência com qualidade"]
+            },
+            {
+                "id": 38,
+                "name": "Palco Final",
+                "category": "metas",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Apresentar projeto em banca ou evento externo",
+                "criteria": ["Apresentar em evento formal", "Receber reconhecimento externo", "Representar o curso com excelência"]
+            },
+            {
+                "id": 39,
+                "name": "Coleção Completa",
+                "category": "metas",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Realizar todas as entregas finais das UCs",
+                "criteria": ["Entregar atividade final de todas as UCs", "Manter padrão elevado de qualidade", "Cumprir todos os requisitos"]
+            },
+            {
+                "id": 40,
+                "name": "Mestre das Classes",
+                "category": "farm",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Demonstrar domínio técnico em 3 áreas distintas",
+                "criteria": ["Mostrar expertise em 3 áreas diferentes", "Integrar conhecimentos multidisciplinares", "Ser referência técnica na turma"]
+            },
+            {
+                "id": 41,
+                "name": "Dev Multiverso",
+                "category": "farm",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Entregar projeto para PC e Mobile",
+                "criteria": ["Desenvolver para múltiplas plataformas", "Adaptar interface e controles", "Manter qualidade em ambas versões"]
+            },
+            {
+                "id": 42,
+                "name": "Bug Slayer",
+                "category": "farm",
+                "difficulty": "ouro",
+                "icon": "🥇",
+                "description": "Corrigir bug crítico não apontado pelo docente",
+                "criteria": ["Identificar bug crítico independentemente", "Implementar solução eficaz", "Demonstrar capacidade analítica avançada"]
+            },
+            {
+                "id": 43,
+                "name": "Lenda dos Jogos",
+                "category": "platina",
+                "difficulty": "platina",
+                "icon": "💎",
+                "description": "Conquistar todos os outros 42 troféus",
+                "criteria": ["Conquistar todos os 42 troféus anteriores", "Demonstrar excelência em todas as áreas", "Tornar-se inspiração para outros estudantes"]
+            }
+        ];
+
+        // Elementos DOM
+        const trophiesGrid = document.getElementById('trophiesGrid');
+        const modal = document.getElementById('trophyModal');
+        const closeBtn = document.querySelector('.close');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        // Função para criar card de troféu
+        function createTrophyCard(trophy) {
+            const card = document.createElement('div');
+            card.className = `trophy-card ${trophy.difficulty}`;
+            card.innerHTML = `
+                <div class="trophy-number">${trophy.id}</div>
+                <span class="trophy-icon">${trophy.icon}</span>
+                <div class="trophy-name">${trophy.name}</div>
+                <div class="trophy-category">${getCategoryName(trophy.category)}</div>
+                <span class="trophy-difficulty difficulty-${trophy.difficulty}">${getDifficultyName(trophy.difficulty)}</span>
+            `;
+            
+            card.addEventListener('click', () => openModal(trophy));
+            return card;
+        }
+
+        // Função para obter nome da categoria
+        function getCategoryName(category) {
+            const names = {
+                'uc': 'UC',
+                'metas': 'Metas Globais',
+                'farm': 'Farm',
+                'platina': 'FIM do GAME'
+            };
+            return names[category] || category;
+        }
+
+        // Função para obter nome da dificuldade
+        function getDifficultyName(difficulty) {
+            const names = {
+                'bronze': 'Bronze',
+                'prata': 'Prata',
+                'ouro': 'Ouro',
+                'platina': 'Platina'
+            };
+            return names[difficulty] || difficulty;
+        }
+
+        // Função para abrir modal
+        function openModal(trophy) {
+            document.getElementById('modalNumber').textContent = trophy.id;
+            document.getElementById('modalIcon').textContent = trophy.icon;
+            document.getElementById('modalTitle').textContent = trophy.name;
+            document.getElementById('modalCategory').textContent = getCategoryName(trophy.category);
+            document.getElementById('modalDescription').textContent = trophy.description;
+            
+            const criteriaHtml = `
+                <h3>Como conquistar este troféu:</h3>
+                <ul>
+                    ${trophy.criteria.map(criterion => `<li>${criterion}</li>`).join('')}
+                </ul>
+            `;
+            document.getElementById('modalCriteria').innerHTML = criteriaHtml;
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Função para fechar modal
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Função para filtrar troféus
+        function filterTrophies(category) {
+            const filteredTrophies = category === 'all' ? trophies : trophies.filter(trophy => trophy.category === category);
+            renderTrophies(filteredTrophies);
+        }
+
+        // Função para renderizar troféus
+        function renderTrophies(trophiesToRender) {
+            trophiesGrid.innerHTML = '';
+            trophiesToRender.forEach(trophy => {
+                const card = createTrophyCard(trophy);
+                trophiesGrid.appendChild(card);
+            });
+        }
+
+        // Event listeners
+        closeBtn.addEventListener('click', closeModal);
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filterTrophies(button.dataset.category);
+            });
+        });
+
+        // Inicializar página
+        renderTrophies(trophies);
+    </script>
+</body>
+</html>
