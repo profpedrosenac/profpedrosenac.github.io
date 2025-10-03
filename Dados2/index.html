@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DICE 3D - Simulador de Dados</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎲 DICE 3D</h1>
+            <p>Simulador de Dados com Física Realística</p>
+        </header>
+
+        <div class="main-content">
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>⚙️ Configurações do Dado</h3>
+                    
+                    <div class="control-group">
+                        <label for="diceType">Tipo de Dado:</label>
+                        <select id="diceType" class="control-select">
+                            <option value="4">D4 (4 lados)</option>
+                            <option value="6" selected>D6 (6 lados)</option>
+                            <option value="8">D8 (8 lados)</option>
+                            <option value="10">D10 (10 lados)</option>
+                            <option value="12">D12 (12 lados)</option>
+                            <option value="20">D20 (20 lados)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="diceCount">Quantidade:</label>
+                        <input type="range" id="diceCount" min="1" max="8" value="1" class="range-slider">
+                        <span id="diceCountValue">1 dado</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="diceColor">Cor:</label>
+                        <select id="diceColor" class="control-select">
+                            <option value="#ffffff">Branco</option>
+                            <option value="#ff6b6b">Vermelho</option>
+                            <option value="#4ecdc4">Turquesa</option>
+                            <option value="#45b7d1">Azul</option>
+                            <option value="#96ceb4">Verde</option>
+                            <option value="#ffeaa7">Amarelo</option>
+                            <option value="#dda0dd">Roxo</option>
+                            <option value="#ffa500">Laranja</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="animationSpeed">Velocidade:</label>
+                        <input type="range" id="animationSpeed" min="1" max="5" value="3" class="range-slider">
+                        <span id="animationSpeedValue">Normal</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="rollButton" class="btn-roll">
+                        <span class="btn-icon">🎲</span>
+                        Rolar Dados
+                    </button>
+                    <button id="clearButton" class="btn-clear">
+                        <span class="btn-icon">🧹</span>
+                        Limpar Mesa
+                    </button>
+                    <button id="clearHistory" class="btn-history">
+                        <span class="btn-icon">📊</span>
+                        Limpar Histórico
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-area">
+                <div class="dice-table" id="diceTable">
+                    <div class="table-surface">
+                        <div class="table-pattern"></div>
+                    </div>
+                    <div class="dice-container" id="diceContainer">
+                        <!-- Dados aparecerão aqui -->
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <div class="current-results" id="currentResults">
+                        <h3>📊 Resultados</h3>
+                        <div class="result-display" id="resultDisplay">
+                            <p class="no-results">Clique em "Rolar Dados" para começar!</p>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <h3>📈 Histórico</h3>
+                        <div class="history-display" id="historyDisplay">
+                            <p class="no-history">Nenhuma jogada ainda</p>
+                        </div>
+                        <div class="stats-display" id="statsDisplay"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
