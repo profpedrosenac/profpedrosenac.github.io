@@ -3,83 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dado Virtual - Sistema Interativo D3-D20</title>
+    <title>DICE 3D - Simulador Realístico</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>🎲 Sistema de Dados</h1>
-        
-        <div class="dice-container">
-            <div class="dice digital-dice" id="dice">
-                <div class="dice-face">
-                    <span class="dice-number">6</span>
+        <header class="header">
+            <h1>🎲 DICE 3D</h1>
+            <p>Simulador de Dados com Física Realística</p>
+        </header>
+
+        <div class="main-content">
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>⚙️ Configurações</h3>
+                    
+                    <div class="control-group">
+                        <label for="diceType">Tipo de Dado:</label>
+                        <select id="diceType" class="control-select">
+                            <option value="d4">D4 (Tetraedro)</option>
+                            <option value="d6" selected>D6 (Cubo)</option>
+                            <option value="d8">D8 (Octaedro)</option>
+                            <option value="d10">D10 (Trapezoidal)</option>
+                            <option value="d12">D12 (Dodecaedro)</option>
+                            <option value="d20">D20 (Icosaedro)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="diceCount">Quantidade:</label>
+                        <input type="range" id="diceCount" min="1" max="6" value="1" class="range-slider">
+                        <span id="diceCountValue">1 dado</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="diceColor">Cor do Dado:</label>
+                        <input type="color" id="diceColor" value="#ff6b6b" class="color-input">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="rollForce">Força do Lançamento:</label>
+                        <input type="range" id="rollForce" min="1" max="5" value="3" class="range-slider">
+                        <span id="rollForceValue">Médio</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="tableTexture">Textura da Mesa:</label>
+                        <select id="tableTexture" class="control-select">
+                            <option value="wood">Madeira</option>
+                            <option value="felt">Feltro</option>
+                            <option value="marble">Mármore</option>
+                            <option value="metal">Metal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="rollButton" class="btn-roll">
+                        <span class="btn-icon">🎲</span>
+                        Rolar Dados
+                    </button>
+                    <button id="clearButton" class="btn-clear">
+                        <span class="btn-icon">🧹</span>
+                        Limpar Mesa
+                    </button>
+                    <button id="resetStats" class="btn-stats">
+                        <span class="btn-icon">📊</span>
+                        Zerar Stats
+                    </button>
+                </div>
+
+                <div class="physics-section">
+                    <h3>🔧 Física Avançada</h3>
+                    
+                    <div class="control-group">
+                        <label for="gravity">Gravidade:</label>
+                        <input type="range" id="gravity" min="0.5" max="2" step="0.1" value="1" class="range-slider">
+                        <span id="gravityValue">Normal</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="bounce">Elasticidade:</label>
+                        <input type="range" id="bounce" min="0" max="1" step="0.1" value="0.6" class="range-slider">
+                        <span id="bounceValue">Média</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="spin">Rotação:</label>
+                        <input type="range" id="spin" min="1" max="10" value="5" class="range-slider">
+                        <span id="spinValue">Normal</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="controls">
-            <div class="dice-type-selector">
-                <label for="diceType">Tipo de dado:</label>
-                <select id="diceType" class="dice-select">
-                    <option value="3">D3 (3 lados)</option>
-                    <option value="4">D4 (4 lados)</option>
-                    <option value="6" selected>D6 (6 lados)</option>
-                    <option value="8">D8 (8 lados)</option>
-                    <option value="10">D10 (10 lados)</option>
-                    <option value="12">D12 (12 lados)</option>
-                    <option value="20">D20 (20 lados)</option>
-                </select>
-            </div>
-            
-            <div class="dice-quantity-selector">
-                <label for="diceCount">Quantidade:</label>
-                <select id="diceCount" class="dice-select">
-                    <option value="1" selected>1 dado</option>
-                    <option value="2">2 dados</option>
-                    <option value="3">3 dados</option>
-                    <option value="4">4 dados</option>
-                    <option value="5">5 dados</option>
-                    <option value="6">6 dados</option>
-                </select>
-            </div>
-            
-            <div class="button-group">
-                <button class="roll-btn" id="rollBtn">Rolar D6</button>
-                <button class="clear-btn" id="clearBtn">Zerar Histórico</button>
-            </div>
-        </div>
-
-        <div class="multiple-dice-container" id="multipleDiceContainer">
-            <!-- Dados adicionais serão criados dinamicamente aqui -->
-        </div>
-
-        <div class="result" id="result">
-            Resultado: <span id="resultValue">-</span>
-        </div>
-
-        <div class="history">
-            <h3>Histórico de Jogadas</h3>
-            <div class="history-list" id="historyList">
-                <span style="opacity: 0.5;">Nenhuma jogada ainda</span>
-            </div>
-            
-            <div class="stats" id="stats" style="display: none;">
-                <div class="stat-item">
-                    <span class="stat-value" id="totalRolls">0</span>
-                    <span class="stat-label">Total</span>
+            <div class="game-area">
+                <div class="dice-table" id="diceTable">
+                    <div class="table-surface">
+                        <div class="table-border"></div>
+                        <div class="table-center-mark"></div>
+                    </div>
+                    
+                    <div class="dice-arena" id="diceArena">
+                        <!-- Dados 3D aparecerão aqui -->
+                    </div>
+                    
+                    <div class="table-info">
+                        <span id="diceCounter">Dados na mesa: 0</span>
+                        <span id="lastRoll">Último resultado: -</span>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="averageRoll">0</span>
-                    <span class="stat-label">Média</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="lastRoll">-</span>
-                    <span class="stat-label">Último</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="highestRoll">-</span>
-                    <span class="stat-label">Maior</span>
+
+                <div class="results-panel">
+                    <div class="current-results">
+                        <h3>📊 Resultados Atuais</h3>
+                        <div class="result-display" id="resultDisplay">
+                            <p class="no-results">Clique em "Rolar Dados" ou na mesa para começar!</p>
+                        </div>
+                    </div>
+
+                    <div class="history-stats">
+                        <h3>📈 Estatísticas & Histórico</h3>
+                        <div class="stats-grid" id="statsGrid">
+                            <div class="stat-item">
+                                <span class="stat-value" id="totalRolls">0</span>
+                                <span class="stat-label">Jogadas</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="averageRoll">0</span>
+                                <span class="stat-label">Média</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="highestRoll">0</span>
+                                <span class="stat-label">Maior</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="streakCount">0</span>
+                                <span class="stat-label">Sequência</span>
+                            </div>
+                        </div>
+                        
+                        <div class="history-display" id="historyDisplay">
+                            <p class="no-history">Nenhuma jogada registrada</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
