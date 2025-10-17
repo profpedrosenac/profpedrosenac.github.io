@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorial Power BI - Análise de Estoque</title>
+    <title>Tutorial Power BI - Análise de Estoque Completo</title>
     <style>
         * {
             margin: 0;
@@ -445,6 +445,21 @@
             color: #28a745;
         }
 
+        .alert-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #155724;
+        }
+
+        .alert-icon {
+            color: #28a745;
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
         @media (max-width: 768px) {
             .content-grid {
                 grid-template-columns: 1fr;
@@ -691,7 +706,7 @@ Detectar tipo de dados: ✓
                         <div class="step-number">3</div>
                         <span>Modelagem de Dados</span>
                     </div>
-                    <div class="step-description">Crie relacionamentos entre as tabelas</div>
+                    <div class="step-description">Crie relacionamentos entre as tabelas e configure colunas calculadas</div>
                 </div>
 
                 <div class="content-grid">
@@ -716,23 +731,148 @@ Detectar tipo de dados: ✓
                     </div>
                 </div>
 
-                <div class="code-block">
-                    <span class="code-title">📅 Coluna: Ano da Movimentação</span>
-                    <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
-Ano = YEAR(movimentacoes[Data])
+                <div class="highlight-box">
+                    <span class="icon">📋</span>
+                    <strong>Passo a Passo:</strong> Primeiro configure os relacionamentos, depois crie as colunas calculadas na tabela movimentacoes para facilitar as análises futuras.
                 </div>
 
-                <div class="code-block">
-                    <span class="code-title">📅 Coluna: Mês da Movimentação</span>
-                    <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
+                <h3 style="text-align: center; margin: 30px 0 20px 0; color: #0078d4;">📊 Fórmulas DAX para Colunas Calculadas</h3>
+
+                <div class="measure-formula">
+                    <strong>📅 1. Ano da Movimentação:</strong>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
+Ano = YEAR(movimentacoes[Data])
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        <strong>Resultado:</strong> Esta fórmula extrai o ano da coluna Data. Com base nos dados, resultará em <strong>2023</strong> para todas as movimentações.
+                    </p>
+                </div>
+
+                <div class="measure-formula">
+                    <strong>📅 2. Mês da Movimentação:</strong>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
 Mês = FORMAT(movimentacoes[Data], "MMMM YYYY")
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        <strong>Alternativas:</strong>
+                    </p>
+                    <div class="code-block" style="margin-top: 10px;">
+                        <span class="code-title">Apenas número do mês:</span>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
+MêsNumero = MONTH(movimentacoes[Data])
+                    </div>
+                    <div class="code-block" style="margin-top: 10px;">
+                        <span class="code-title">Mês abreviado:</span>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
+MêsAbrev = FORMAT(movimentacoes[Data], "MMM YYYY")
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        <strong>Resultado:</strong> "Janeiro 2023", "Fevereiro 2023", etc.
+                    </p>
+                </div>
+
+                <div class="measure-formula">
+                    <strong>➕➖ 3. Quantidade com Sinal:</strong>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
+QuantidadeComSinal = 
+IF(
+    movimentacoes[Tipo] = "Entrada",
+    movimentacoes[Quantidade],
+    -movimentacoes[Quantidade]
+)
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        <strong>Funcionalidade:</strong> Transforma entradas em valores positivos (+85) e saídas em valores negativos (-97), facilitando cálculos de estoque.
+                    </p>
+                </div>
+
+                <div class="measure-formula">
+                    <strong>🏷️ 4. Status do Produto:</strong>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
+StatusProduto = 
+VAR ProdutoAtual = movimentacoes[ID_Produto]
+VAR EstoqueAtual = 
+    CALCULATE(
+        SUMX(
+            FILTER(movimentacoes, movimentacoes[ID_Produto] = ProdutoAtual),
+            IF(movimentacoes[Tipo] = "Entrada", movimentacoes[Quantidade], -movimentacoes[Quantidade])
+        ),
+        ALL(movimentacoes)
+    )
+VAR EstoqueMinimo = RELATED(produtos[Estoque Mínimo])
+RETURN
+    SWITCH(
+        TRUE(),
+        EstoqueAtual < 0, "🔴 CRÍTICO - NEGATIVO",
+        EstoqueAtual = 0, "🟡 ZERADO",
+        EstoqueAtual < EstoqueMinimo, "🟠 ABAIXO DO MÍNIMO",
+        "🟢 NORMAL"
+    )
+
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        <strong>Versão Simplificada (alternativa):</strong>
+                    </p>
+                    <div class="code-block" style="margin-top: 10px;">
+                        <span class="code-title">Para relacionamento direto:</span>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
+StatusSimples = 
+IF(
+    RELATED(produtos[Estoque Mínimo]) > 50,
+    "Alto Mínimo",
+    "Baixo Mínimo"
+)
+                    </div>
+                </div>
+
+                <div class="data-preview">
+                    <table>
+                        <thead>
+                            <tr><th colspan="5">📋 Exemplo dos Resultados Esperados</th></tr>
+                            <tr><th>Movimentação ID</th><th>Ano</th><th>Mês</th><th>Quantidade com Sinal</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>2023</td><td>Setembro 2023</td><td>-97</td><td>🔴 CRÍTICO</td></tr>
+                            <tr><td>2</td><td>2023</td><td>Março 2023</td><td>+85</td><td>🟢 NORMAL</td></tr>
+                            <tr><td>8</td><td>2023</td><td>Setembro 2023</td><td>-52</td><td>🔴 CRÍTICO</td></tr>
+                            <tr><td>9</td><td>2023</td><td>Dezembro 2023</td><td>-96</td><td>🔴 CRÍTICO</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="highlight-box">
+                    <span class="icon">🔧</span>
+                    <strong>Como Implementar:</strong>
+                    <ol style="margin: 10px 0; padding-left: 20px;">
+                        <li>Selecione a tabela <strong>movimentacoes</strong> no painel Campos</li>
+                        <li>Clique com botão direito → <strong>Nova coluna</strong></li>
+                        <li>Digite a fórmula DAX correspondente</li>
+                        <li>Pressione <strong>Enter</strong> para confirmar</li>
+                        <li>Repita para todas as 4 colunas</li>
+                    </ol>
                 </div>
 
                 <div class="visual-example">
                     <div class="visual-placeholder">
-                        🔗 Diagrama de Relacionamentos<br>
-                        funcionarios ← movimentacoes → produtos
+                        🔗 Diagrama de Relacionamentos + Colunas Calculadas<br>
+                        funcionarios ← movimentacoes → produtos<br>
+                        📊 + 4 Novas Colunas Calculadas
                     </div>
+                </div>
+
+                <div class="alert-box">
+                    <span class="alert-icon">💡</span>
+                    <strong>Dicas Importantes:</strong>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>Performance:</strong> Use RELATED() apenas quando necessário para buscar dados de tabelas relacionadas</li>
+                        <li><strong>Validação:</strong> Teste as fórmulas com uma amostra pequena antes de aplicar em todo o dataset</li>
+                        <li><strong>Alternativas:</strong> Para cálculos mais complexos de estoque, considere usar Medidas DAX ao invés de colunas calculadas</li>
+                        <li><strong>Formatação:</strong> A função FORMAT() é útil para criar textos personalizados para datas</li>
+                    </ul>
                 </div>
             </div>
 
@@ -897,6 +1037,7 @@ CALCULATE(
                     <button class="copy-btn" onclick="copyToClipboard(this)">Copiar</button>
 ☑️ Dados importados corretamente
 ☑️ Relacionamentos configurados
+☑️ Colunas calculadas criadas
 ☑️ Medidas DAX funcionando
 ☑️ Visualizações criadas
 ☑️ Formatação aplicada
@@ -984,6 +1125,22 @@ CALCULATE(
                     button.innerHTML = 'Copiar';
                     button.style.background = '#4a5568';
                 }, 2000);
+            }).catch(err => {
+                // Fallback para navegadores mais antigos
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                button.innerHTML = '✓ Copiado';
+                button.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    button.innerHTML = 'Copiar';
+                    button.style.background = '#4a5568';
+                }, 2000);
             });
         }
 
@@ -1008,9 +1165,13 @@ CALCULATE(
         window.addEventListener('load', () => {
             const saved = localStorage.getItem('powerbi_tutorial_progress');
             if (saved) {
-                const data = JSON.parse(saved);
-                data.completedSteps.forEach(step => completedSteps.add(step));
-                showStep(data.currentStep);
+                try {
+                    const data = JSON.parse(saved);
+                    data.completedSteps.forEach(step => completedSteps.add(step));
+                    showStep(data.currentStep);
+                } catch (e) {
+                    console.log('Erro ao carregar progresso salvo');
+                }
             }
         });
 

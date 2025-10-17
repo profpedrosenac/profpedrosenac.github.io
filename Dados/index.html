@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dado Virtual - Sistema Interativo D3-D20</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Sistema de Dados</h1>
+        
+        <div class="dice-container">
+            <div class="dice digital-dice" id="dice">
+                <div class="dice-face">
+                    <span class="dice-number">6</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="dice-type-selector">
+                <label for="diceType">Tipo de dado:</label>
+                <select id="diceType" class="dice-select">
+                    <option value="3">D3 (3 lados)</option>
+                    <option value="4">D4 (4 lados)</option>
+                    <option value="6" selected>D6 (6 lados)</option>
+                    <option value="8">D8 (8 lados)</option>
+                    <option value="10">D10 (10 lados)</option>
+                    <option value="12">D12 (12 lados)</option>
+                    <option value="20">D20 (20 lados)</option>
+                </select>
+            </div>
+            
+            <div class="dice-quantity-selector">
+                <label for="diceCount">Quantidade:</label>
+                <select id="diceCount" class="dice-select">
+                    <option value="1" selected>1 dado</option>
+                    <option value="2">2 dados</option>
+                    <option value="3">3 dados</option>
+                    <option value="4">4 dados</option>
+                    <option value="5">5 dados</option>
+                    <option value="6">6 dados</option>
+                </select>
+            </div>
+            
+            <div class="button-group">
+                <button class="roll-btn" id="rollBtn">Rolar D6</button>
+                <button class="clear-btn" id="clearBtn">Zerar Histórico</button>
+            </div>
+        </div>
+
+        <div class="multiple-dice-container" id="multipleDiceContainer">
+            <!-- Dados adicionais serão criados dinamicamente aqui -->
+        </div>
+
+        <div class="result" id="result">
+            Resultado: <span id="resultValue">-</span>
+        </div>
+
+        <div class="history">
+            <h3>Histórico de Jogadas</h3>
+            <div class="history-list" id="historyList">
+                <span style="opacity: 0.5;">Nenhuma jogada ainda</span>
+            </div>
+            
+            <div class="stats" id="stats" style="display: none;">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalRolls">0</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="averageRoll">0</span>
+                    <span class="stat-label">Média</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="lastRoll">-</span>
+                    <span class="stat-label">Último</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="highestRoll">-</span>
+                    <span class="stat-label">Maior</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

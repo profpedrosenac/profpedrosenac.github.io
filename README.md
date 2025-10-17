@@ -1,3 +1,3 @@
 # profpedrosenac.github.io
 
-*** https://profpedrosenac.github.io/PowerBi/ ***
+*** https://profpedrosenac.github.io/Trofeus/ ***

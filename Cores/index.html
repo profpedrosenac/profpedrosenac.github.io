@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Círculo Cromático HSL Avançado</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Círculo Cromático HSL Avançado</h1>
+        <p>Ferramenta profissional para criação de paletas harmônicas com base em relações cromáticas</p>
+    </div>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <div class="control-group">
+                <h3>Relações Harmônicas</h3>
+                <div class="harmony-selector">
+                    <select id="harmonySelect">
+                        <option value="mono">Monocromáticas</option>
+                        <option value="complement">Complementares</option>
+                        <option value="analogous">Análogas</option>
+                        <option value="triadic">Triádicas</option>
+                        <option value="split">Complementares Divididas</option>
+                        <option value="tetradic">Tetrádicas (Retângulo)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Valores HSL</h3>
+                <div class="hsl-display">
+                    <div class="hsl-value">
+                        <span>Matiz (H):</span>
+                        <span id="hue-value">180°</span>
+                    </div>
+                    <div class="hsl-value">
+                        <span>Saturação (S):</span>
+                        <span id="saturation-value">70%</span>
+                    </div>
+                    <div class="hsl-value">
+                        <span>Luminosidade (L):</span>
+                        <span id="lightness-value">50%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Ajustes Finos</h3>
+                <div class="sliders">
+                    <div class="slider-group">
+                        <label>Matiz (Hue)</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="hue-slider" min="0" max="360" value="180">
+                            <input type="number" class="numeric-input" id="hue-input" min="0" max="360" value="180">
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Saturação</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="saturation-slider" min="0" max="100" value="70">
+                            <input type="number" class="numeric-input" id="saturation-input" min="0" max="100" value="70">
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Luminosidade</label>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="lightness-slider" min="0" max="100" value="50">
+                            <input type="number" class="numeric-input" id="lightness-input" min="0" max="100" value="50">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button class="export-button secondary" onclick="randomizePalette()">🎲 Aleatorizar Cores</button>
+                <button class="export-button secondary" onclick="resetPalette()">↺ Resetar para Padrão</button>
+            </div>
+        </div>
+
+        <div class="center-panel">
+            <div class="harmony-description" id="harmonyDescription">
+                <h4>Cores Monocromáticas</h4>
+                <p>Utilize variações de luminosidade e saturação de uma única matiz para criar composições elegantes e sofisticadas. Esta relação harmônica oferece unidade visual e tranquilidade, sendo ideal para designs minimalistas e interfaces clean.</p>
+            </div>
+
+            <div class="color-wheel-container">
+                <canvas id="colorWheel" class="color-wheel" width="400" height="400"></canvas>
+                <div id="primarySelector" class="color-selector"></div>
+                <div id="secondarySelectors"></div>
+            </div>
+            <div id="currentColorDisplay" class="current-color-display"></div>
+        </div>
+
+        <div class="right-panel">
+            <div class="export-section">
+                <h3>🎨 Exportar Paleta</h3>
+                <button class="export-button" onclick="exportCSS()">📄 Variáveis CSS</button>
+                <button class="export-button" onclick="exportJSON()">📋 Dados JSON</button>
+                <button class="export-button" onclick="exportPNG()">🖼️ Imagem PNG</button>
+                <button class="export-button" onclick="exportASE()">🎯 Adobe ASE</button>
+            </div>
+
+            <div class="primary-color-section">
+                <h3>🎯 Cor Primária</h3>
+                <input type="text" id="primaryColorInput" class="color-input" placeholder="#3498db">
+                <button class="export-button" onclick="copyPrimaryColor()">📋 Copiar Cor Principal</button>
+            </div>
+
+            <div class="color-preview">
+                <h3>🌈 Paleta Gerada</h3>
+                <div id="colorPalette"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
